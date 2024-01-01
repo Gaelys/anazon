@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}liste des categories{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1>Voici une liste de nos catégories</h1>
+
+    <a href="{{path('app_categories_new')}}">Nouvelle catégorie</a>
+    {% for category in categories %}
+        <h2>
+            <a href="{{path('app_categories_show', {id: category.id})}}">{{category.name}}</a>
+        </h2>
+        {% if category.parent %}
+            <h3>Enfant de {{category.parent.name}}</h3>
+        {% endif %}
+    {% endfor %}
+
+</div>
+{% endblock %}
