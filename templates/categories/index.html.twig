@@ -7,15 +7,43 @@
 <div class="example-wrapper">
     <h1>Voici une liste de nos catégories</h1>
 
+    {{form(form)}}
+
     <a href="{{path('app_categories_new')}}">Nouvelle catégorie</a>
-    {% for category in categories %}
+    {# {% for category in categories %}
         <h2>
             <a href="{{path('app_categories_show', {id: category.id})}}">{{category.name}}</a>
         </h2>
         {% if category.parent %}
             <h3>Enfant de {{category.parent.name}}</h3>
         {% endif %}
-    {% endfor %}
+    {% endfor %} #}
+    
+
+    <table>
+        <tr>
+            {# sorting of properties based on query components #}
+            <th>{{ knp_pagination_sortable(categories, 'Id', 'c.id') }}</th>
+            <th{% if categories.isSorted('c.name') %} class="sorted"{% endif %}>
+                {{ knp_pagination_sortable(categories, 'Name', 'c.name') }}
+            </th>
+        </tr>
+
+        {# table body #}
+        {% for category in categories %}
+            <tr {% if loop.index is odd %}class="color"{% endif %}>
+                <td>{{ category.id }}</td>
+                <td><a href="{{path('app_categories_show', {slug: category.slug})}}">{{category.name}}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    
+
+
+    <div class="navigation">
+        {{ knp_pagination_render(categories) }}
+    </div>
 
 </div>
 {% endblock %}

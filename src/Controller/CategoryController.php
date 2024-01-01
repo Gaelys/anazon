@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+
 use App\Entity\Category;
+use App\Form\CategorySearchType;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,14 +17,23 @@ use Symfony\Component\Routing\Annotation\Route;
 class CategoryController extends AbstractController
 {
     #[Route('/categories', name: 'app_categories')]
-    public function index(CategoryRepository $categoryRepository): Response
+    public function index(CategoryRepository $categoryRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $form =$this->createForm(CategorySearchType::class);
+        $form->handleRequest($request);
+        $categories = $paginator->paginate(
+            $categoryRepository->GestListQueryBuilder($form->get('query')->getData()), /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            2 /*limit per page*/
+        );
+
         return $this->render('categories/index.html.twig', [
-            'categories' => $categoryRepository->findAll()
+            'form' => $form,
+            'categories' => $categories,
         ]);
     }
 
-    #[Route('/categories/{id<^\d+$>}', name: 'app_categories_show')]
+    #[Route('/categories/{slug}', name: 'app_categories_show')]
     public function show(Category $category): Response
     {
         
